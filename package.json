@@ -1,0 +1,23 @@
+{
+  "name": "one-stroked",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/variy/one-stroked.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/variy/one-stroked/issues"
+  },
+  "homepage": "https://github.com/variy/one-stroked#readme",
+  "devDependencies": {
+    "express": "^4.15.2",
+    "webpack": "^2.4.1"
+  }
+}
