@@ -18,6 +18,10 @@
   "homepage": "https://github.com/variy/one-stroked#readme",
   "devDependencies": {
     "express": "^4.15.2",
-    "webpack": "^2.4.1"
+    "extract-text-webpack-plugin": "^2.1.0",
+    "html-webpack-plugin": "^2.28.0",
+    "webpack": "^2.4.1",
+    "webpack-dev-middleware": "^1.10.1",
+    "webpack-hot-middleware": "^2.18.0"
   }
 }
