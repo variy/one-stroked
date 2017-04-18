@@ -45,7 +45,6 @@
 	Game.prototype.preLoad = function(){
 		this.aImg = {
 			bg:'img/bg.jpg',
-			tip:'img/tip.png',
 			home:'img/home.png',
 			btns:'img/control-btn.png',
 			pt:'img/point.png',
@@ -151,7 +150,8 @@
 		}
 	}
 
-	Game.prototype.handleLoadErroe = function(){
+	Game.prototype.handleLoadErroe = function(e){
+		debugger;
 		alert('error')
 	}
 
