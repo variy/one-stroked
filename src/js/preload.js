@@ -1,34 +1,17 @@
 
-var imgObj = {
-    bg: '../img/bg.jpg',
-    home: '../img/home.png',
-    btns: '../img/control-btn.png',
-    pt: '../img/point.png',
-    number: '../img/number.png'
-};
 
-var audioObj = {
-    star1: '../audio/star1.ogg',
-    star2: '../audio/star2.ogg',
-    star3: '../audio/star3.ogg',
-    main: '../audio/sm_main_music.ogg',
-    start: '../audio/start_game.ogg',
-    click: '../audio/click.ogg',
-    fail: '../audio/fail.ogg',
-    win: '../audio/win.ogg'
-}
-var files = (function getFiles() {
-    var files = [];
-    for (var attr in imgObj) {
-        files.push(imgObj[attr]);
-    }
-    for (var attr in audioObj) {
-        files.push(audioObj[attr]);
-    }
-    return files;
-})();
+module.exports = function(fileArr, cb){
 
-module.exports = function(cb){
+    var files = (function(fileArr) {
+        var files = [];
+        fileArr.forEach(function(obj) {
+            for (var attr in obj) {
+                files.push(obj[attr]);
+            }
+        });
+        return files;
+    })(fileArr);
+
     var queue = new createjs.LoadQueue();
     queue.installPlugin(createjs.Sound);
 
@@ -51,8 +34,7 @@ module.exports = function(cb){
         alert('err')
     });
 
-    queue.on("complete", cb);
-
+    queue.on("complete", _.bind(cb, window, queue));
 
     queue.loadManifest(files);
 };
