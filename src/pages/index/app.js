@@ -73,8 +73,10 @@ Game.prototype.drawEnterPage = function(){
     // })
 }
 Game.prototype.renderPass = function() {
-
     var self = this;
+    this.ptHalfWidth = 24;
+    this.ptHalfHeight = 21;
+
     this.ptSpriteArr = [];
     this.lineCoords = [];
     this.staticLine = new createjs.Shape();
@@ -86,8 +88,16 @@ Game.prototype.renderPass = function() {
         'frames': {width: 48, height: 42},
         'framerate': 1
     });
+
+    this.ptCollection = [];
     this.pointIcon = new createjs.Sprite(pointSpSheet);
     this.pointIcon.gotoAndStop(1);
+
+    this.pass.line.forEach(function(){
+
+    });
+
+
     // 画线
     this.stage.addChild(self.staticLine,self.drawingLine,self.drawedLine);
     _.each(this.pass.line,function(line){
@@ -104,15 +114,33 @@ Game.prototype.renderPass = function() {
     this.emptyLineCoords = this.lineCoords;
     // 画点
     this.ptCoords = [];  //所有点坐标数组
-    _.each(this.pass.point,function(Pts){
-        this.ptCoords = this.ptCoords.concat(Pts);
-    },this);
+    // _.each(this.pass.point,function(Pts, i){
+    //     this.ptCoords.push();
+    // },this);
 
-    _.each(this.ptCoords,function(coord){
+    for(var i=0, len= this.pass.point.length; i < len; i++){
+        var item = this.pass.point[i];
+        for(var j=0, inLen = item.length; j< inLen; j++){
+            this.ptCoords.push({
+                coord: item[j],
+                sign: i+ ''+ j
+            })
+        }
+    }
+
+    _.each(this.ptCoords,function(obj, i){
         var ptIcon = this.pointIcon.clone();
-        ptIcon.x = coord[0];
-        ptIcon.y = coord[1];
+        ptIcon.x = obj.coord[0];
+        ptIcon.y = obj.coord[1];
         this.ptSpriteArr.push(ptIcon);
+        self.ptCollection.push({
+            sign: obj.sign,
+            x: obj.coord[0],
+            y: obj.coord[1],
+            cx: obj.coord[0] + self.ptHalfWidth,
+            cy: obj.coord[1] + self.ptHalfHeight,
+            sprite: ptIcon
+        });
         this.stage.addChild(ptIcon);
     },this);
 
@@ -225,30 +253,36 @@ Game.prototype.fnDrawLine = function() {
     this.stage.enableMouseOver(10);
     var self = this;
     
-    
-    this.ptCenterCoords = _.map(this.ptCoords,function(coord){
-        return [coord[0]+24,coord[1]+21];
-    },this);
-    this.emptyPtCoords = this.ptCenterCoords;
+    // debugger
+    // this.ptCenterCoords = _.map(this.ptCoords,function(coord){
+    //     return [coord[0].coord+24,coord[1].coord+21];
+    // },this);
+    // this.emptyPtCoords = this.ptCenterCoords;
     var self = this;
     var drawingLine, bx, by;
     _.each(this.ptSpriteArr,function(pt){
         pt.on('mousedown',function(evt){    //为什么这里要用function包  
         // debugger;
-            this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
 
+            this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
+            self.emptyPtArr = _.reject(self.ptCollection, function(item){
+                return item.x === pt.x && item.y === pt.y
+            });
+
+            self.startPt = _.find(self.ptCollection, function(item){
+                return item.x === pt.x && item.y === pt.y
+            });
             drawingLine = new createjs.Shape();  //画出来的线,画线的位置和点的位置是有偏移的
             bx = this.x + 24;
             by = this.y + 21;
-            console.log(this.x, this.y)
 
             self.stage.addChild(drawingLine)
             // self.handleDown(e);
         });
 
         pt.on('pressmove', function(evt){
+            // console.log(self.stage.mouseX,self.stage.mouseY)
 
-            var self = this;
             var x = evt.stageX + this.offset.x;
             var y = evt.stageY + this.offset.y;
             // indicate that the stage should be updated on the next tick:
@@ -257,10 +291,24 @@ Game.prototype.fnDrawLine = function() {
             drawingLine.graphics.clear().setStrokeStyle(12, 'round', 'round')
                     .beginStroke('rgba(0,255,0,1)')
                     .moveTo(bx,  by)
-                    .lineTo(x, y);
+                    .lineTo(evt.stageX, evt.stageY);
+            var padding = 11 + self.ptHalfWidth;
+            var coord = [self.stage.mouseX,self.stage.mouseY ];
+            // console.log(JSON.stringify(self.ptCenterCoords))
+            var target = _.find(self.emptyPtArr, function(d) {
+                return Math.sqrt((Math.pow((coord[0] - d.cx), 2) + Math.pow((coord[1] - d.cy), 2))) < padding;
+            }, this);
 
+            if(target){
+
+                console.log(self.startPt.sign ,target.sign)
+            }
             
-        })
+        });
+
+        pt.on("stagemouseup", function (evt) {
+            drawingLine.graphics.clear()
+        });
 
 
 
@@ -314,15 +362,6 @@ Game.prototype.fnDrawLine = function() {
 
 
     };
-
-    this.DoMeetPt = function(coord){
-        var coord = [self.stage.mouseX,self.stage.mouseY ];
-        var padding = 8;
-        var target = _.find(this.ptCenterCoords,function(d){
-            return  Math.sqrt( (Math.pow((coord[0]-d[0]),2 ) + Math.pow((coord[1]-d[1]),2)) )< padding;
-        },this);
-        return target;
-    }
 
     this.meetPt = function(){
         var curPt = self.DoMeetPt(),    //当前绘图遇到的点的位置
@@ -399,7 +438,7 @@ var tick =function(e){
     // game.stage.update(event);
 }
 
-var game;
+window.game;
 preloadFn([ImgObj, AudioObj], function(queue){
     for(var attr in ImgObj){
         ImgObj[attr] = queue.getResult(ImgObj[attr]);
