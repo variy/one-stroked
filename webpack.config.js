@@ -8,12 +8,12 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var webpackConfig = {
     entry: {
-        'index': path.join(CONFIG.srcPath, 'pages/index/app.js')
+        'index': path.join(CONFIG.srcPath, 'pages/index/app.js'),
     },
     output: {
         path: CONFIG.destPath,
         publicPath: DEBUG ? ('http://localhost:' + CONFIG.port + '/') : './',
-        filename: DEBUG ?"[name].js" : './pagejs/[name].[chunkhash:8].min.js'
+        filename: DEBUG ?"[name].js" : './pagejs/[name].[hash:8].min.js'
 
     },
     devtool: DEBUG? 'source-map': '',
@@ -33,7 +33,7 @@ var webpackConfig = {
     },
     plugins: [
         new ExtractTextPlugin("styles.css"),
-
+        new webpack.HotModuleReplacementPlugin(),
         new HtmlwebpackPlugin({
             template: path.resolve(CONFIG.srcPath, 'template.ejs'),
             filename: 'index.html',
