@@ -58,5 +58,5 @@ preloadFn([ImgObj, AudioObj], function(queue){
     for(var attr in ImgObj){
         ImgObj[attr] = queue.getResult(ImgObj[attr]);
     }
-    new Game(0)
+    new Game(0);
 });

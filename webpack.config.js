@@ -1,11 +1,12 @@
 var path = require('path');
+var webpack =require('webpack');
 var CONFIG = require('./config.js');
 var DEBUG = CONFIG.debug;
 var CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin");
 var HtmlwebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-module.exports = {
+var webpackConfig = {
     entry: {
         'index': path.join(CONFIG.srcPath, 'pages/index/app.js')
     },
@@ -45,3 +46,16 @@ module.exports = {
 
     ]
 }
+
+if(DEBUG){
+    for(var attr in webpackConfig.entry){
+        if( ! Array.isArray(webpackConfig.entry[attr])){
+            webpackConfig.entry[attr] = Array.of(webpackConfig.entry[attr]);
+        }
+        webpackConfig.entry[attr].push('webpack-hot-middleware/client?reload=true')
+    }
+
+    webpackConfig.plugins.push(new webpack.NoEmitOnErrorsPlugin())
+}
+
+module.exports = webpackConfig;
