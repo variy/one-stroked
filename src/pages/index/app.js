@@ -5,7 +5,7 @@ var ImgObj = {
     home: '../img/home.png',
     btns: '../img/control-btn.png',
     pt: '../img/point.png',
-    number: '../img/number.png'
+    num: '../img/number.png'
 };
 
 var AudioObj = {
@@ -50,8 +50,75 @@ Game.prototype.drawEnterPage = function(){
         self.stage.removeAllChildren();
         self.stage.update();
         // self.gotoPlay(0);
-        debugger;
+        self.timerCount(60);
     })
+}
+
+
+Game.prototype.timerCount = function(n) {
+
+    // 倒计时的时间只会有两位数
+    // ?? sprite能不能控制framerate
+    var self = this;
+    var ten = Math.floor(n/10),
+        sec = n - ten*10;
+
+    var tenData = {
+        framerate: 0.1,
+        'images': [ImgObj.num],
+        'frames': {
+            width: 28,
+            height: 38
+        },
+        'animations': {
+            'countDown': {
+                'frames': [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+            }
+        }
+    };
+    var secData = {
+        framerate: 1,
+        'images': [ImgObj.num],
+        'frames': {
+            width: 28,
+            height: 38
+        },
+        'animations': {
+            'countDown': {
+                'frames': [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+            }
+        }
+    };
+        debugger;
+
+    var tenSpSheet = new createjs.SpriteSheet(tenData);
+    var tenNumSp = new createjs.Sprite(tenSpSheet, 'countDown');
+    tenNumSp.y = 20;
+    tenNumSp.x = 120;
+    tenNumSp.gotoAndStop(ten);
+    if (tenNumSp.currentFrame == 0) {
+
+    }
+    var secSpSheet = new createjs.SpriteSheet(secData);
+    var secNumSp = new createjs.Sprite(secSpSheet, 'countDown');
+    secNumSp.x = 148;
+    secNumSp.y = 20;
+    secNumSp.gotoAndStop(sec);
+    
+    this.stage.addChild(tenNumSp, secNumSp);
+
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.addEventListener("tick", self.stage);
+    this.stage.update();
+
+
+    // this.clearTimeIcons = function() {
+    //     var self = this;
+    //     for (var i = 0; i < this.iconsArr.length; i++) {
+    //         this.stage.removeChild(self.iconsArr[i]);
+    //     }
+    //     this.iconsArr = [];
+    // }
 }
 
 preloadFn([ImgObj, AudioObj], function(queue){
